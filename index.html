@@ -8,6 +8,19 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <!-- 資料庫連接狀態遮罩 -->
+    <div id="dbLoadingOverlay" class="db-loading-overlay">
+        <div class="db-loading-content">
+            <div class="db-loading-spinner"></div>
+            <h2>正在連接資料庫...</h2>
+            <p id="dbLoadingMessage">請稍候，系統正在啟動中</p>
+            <div id="dbErrorMessage" class="db-error-message" style="display: none;">
+                <p>⚠️ 資料庫連接失敗</p>
+                <button onclick="window.location.reload()" class="btn-retry">重新載入</button>
+            </div>
+        </div>
+    </div>
+
     <header>
         <nav>
             <div class="logo">家教工具庫</div>

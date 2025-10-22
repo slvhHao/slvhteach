@@ -57,8 +57,25 @@ app.get('/', (req, res) => {
         version: '1.0.0',
         endpoints: {
             materials: '/api/materials',
-            options: '/api/options'
+            options: '/api/options',
+            health: '/api/health'
         }
+    });
+});
+
+// 健康檢查 API（檢查 MongoDB 連接狀態）
+app.get('/api/health', (_req, res) => {
+    const dbState = mongoose.connection.readyState;
+    const isConnected = dbState === 1;
+
+    res.status(isConnected ? 200 : 503).json({
+        status: isConnected ? 'ok' : 'error',
+        database: {
+            connected: isConnected,
+            state: dbState, // 0=disconnected, 1=connected, 2=connecting, 3=disconnecting
+            stateText: ['disconnected', 'connected', 'connecting', 'disconnecting'][dbState] || 'unknown'
+        },
+        timestamp: new Date().toISOString()
     });
 });
 

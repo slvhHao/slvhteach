@@ -1270,21 +1270,84 @@ function initContactForm() {
     }
 }
 
+// ========== 資料庫連接檢查 ==========
+
+async function checkDatabaseConnection() {
+    const overlay = document.getElementById('dbLoadingOverlay');
+    const message = document.getElementById('dbLoadingMessage');
+    const errorMessage = document.getElementById('dbErrorMessage');
+
+    const maxRetries = 10;
+    const retryDelay = 3000; // 3秒
+
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+        try {
+            message.textContent = `正在檢查資料庫連接... (嘗試 ${attempt}/${maxRetries})`;
+
+            const response = await API.get(API_CONFIG.ENDPOINTS.HEALTH);
+
+            if (response.status === 'ok' && response.database.connected) {
+                // 連接成功
+                message.textContent = '資料庫連接成功！正在載入資料...';
+
+                // 延遲隱藏遮罩，讓用戶看到成功訊息
+                setTimeout(() => {
+                    overlay.classList.add('hidden');
+                    // 完全移除遮罩，避免影響頁面操作
+                    setTimeout(() => {
+                        overlay.style.display = 'none';
+                    }, 500);
+                }, 800);
+
+                return true;
+            } else {
+                throw new Error('資料庫未連接');
+            }
+        } catch (error) {
+            console.error(`資料庫連接檢查失敗 (嘗試 ${attempt}/${maxRetries}):`, error);
+
+            if (attempt < maxRetries) {
+                message.textContent = `連接失敗，${retryDelay/1000} 秒後重試... (${attempt}/${maxRetries})`;
+                await new Promise(resolve => setTimeout(resolve, retryDelay));
+            } else {
+                // 所有嘗試都失敗
+                message.textContent = '無法連接到資料庫';
+                errorMessage.style.display = 'block';
+                return false;
+            }
+        }
+    }
+
+    return false;
+}
+
 // 頁面載入完成後初始化
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', async function() {
         initMobileMenu();
-        await loadOptions();
-        initMaterialManagement();
-        initOptionsManagement();
-        initContactForm();
+
+        // 先檢查資料庫連接
+        const dbConnected = await checkDatabaseConnection();
+
+        if (dbConnected) {
+            await loadOptions();
+            initMaterialManagement();
+            initOptionsManagement();
+            initContactForm();
+        }
     });
 } else {
     (async function() {
         initMobileMenu();
-        await loadOptions();
-        initMaterialManagement();
-        initOptionsManagement();
-        initContactForm();
+
+        // 先檢查資料庫連接
+        const dbConnected = await checkDatabaseConnection();
+
+        if (dbConnected) {
+            await loadOptions();
+            initMaterialManagement();
+            initOptionsManagement();
+            initContactForm();
+        }
     })();
 }

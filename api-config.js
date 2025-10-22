@@ -13,7 +13,8 @@ const API_CONFIG = {
     // API 端點
     ENDPOINTS: {
         MATERIALS: '/materials',
-        OPTIONS: '/options'
+        OPTIONS: '/options',
+        HEALTH: '/health'
     }
 };
 
