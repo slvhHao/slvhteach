@@ -88,13 +88,11 @@ main > section {
 .hero {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
-    flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
-    padding: 2rem;
-    min-height: calc(100vh - 120px);
+    padding: 4rem 2rem;
 }
 
 .hero-content h1 {

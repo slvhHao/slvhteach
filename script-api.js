@@ -10,6 +10,15 @@ function showSection(sectionId) {
     const targetSection = document.querySelector(sectionId);
     if (targetSection) {
         targetSection.style.display = 'block';
+
+        // 如果是首頁，同時顯示服務區塊
+        if (sectionId === '#home') {
+            const servicesSection = document.querySelector('#services');
+            if (servicesSection) {
+                servicesSection.style.display = 'block';
+            }
+        }
+
         window.scrollTo({
             top: 0,
             behavior: 'smooth'
