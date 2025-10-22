@@ -108,17 +108,62 @@ let materials = [];
 let optionsData = {};
 let currentPhotoData = null;
 
-// 照片預覽功能
+// 圖片壓縮功能
+function compressImage(file, maxWidth = 800, quality = 0.7) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = new Image();
+            img.onload = function() {
+                // 建立 canvas
+                const canvas = document.createElement('canvas');
+                let width = img.width;
+                let height = img.height;
+
+                // 計算縮放比例
+                if (width > maxWidth) {
+                    height = (height * maxWidth) / width;
+                    width = maxWidth;
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+
+                // 繪製圖片
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+
+                // 轉換為 Base64，並壓縮品質
+                const compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
+
+                // 計算壓縮率
+                const originalSize = e.target.result.length;
+                const compressedSize = compressedDataUrl.length;
+                const compressionRatio = ((1 - compressedSize / originalSize) * 100).toFixed(1);
+
+                console.log(`圖片壓縮完成：原始 ${(originalSize / 1024).toFixed(0)}KB → 壓縮後 ${(compressedSize / 1024).toFixed(0)}KB (縮小 ${compressionRatio}%)`);
+
+                resolve(compressedDataUrl);
+            };
+            img.onerror = reject;
+            img.src = e.target.result;
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
+}
+
+// 照片預覽功能（支援自動壓縮）
 function handlePhotoUpload() {
     const photoInput = document.getElementById('materialPhoto');
     const photoPreview = document.getElementById('photoPreview');
     const previewImage = document.getElementById('previewImage');
 
-    photoInput.addEventListener('change', function(e) {
+    photoInput.addEventListener('change', async function(e) {
         const file = e.target.files[0];
         if (file) {
-            if (file.size > 5 * 1024 * 1024) {
-                alert('照片檔案過大，請選擇小於 5MB 的照片');
+            if (file.size > 10 * 1024 * 1024) {
+                alert('照片檔案過大，請選擇小於 10MB 的照片');
                 photoInput.value = '';
                 return;
             }
@@ -128,13 +173,29 @@ function handlePhotoUpload() {
                 return;
             }
 
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                currentPhotoData = event.target.result;
-                previewImage.src = currentPhotoData;
+            try {
+                // 顯示載入中
+                previewImage.src = '';
                 photoPreview.style.display = 'block';
-            };
-            reader.readAsDataURL(file);
+                previewImage.alt = '正在壓縮圖片...';
+
+                // 壓縮圖片
+                currentPhotoData = await compressImage(file, 800, 0.7);
+
+                // 顯示預覽
+                previewImage.src = currentPhotoData;
+                previewImage.alt = '照片預覽';
+
+                // 顯示壓縮後的大小
+                const sizeKB = (currentPhotoData.length / 1024).toFixed(0);
+                console.log(`壓縮後圖片大小: ${sizeKB}KB`);
+
+            } catch (error) {
+                console.error('圖片壓縮失敗:', error);
+                alert('圖片處理失敗，請重試');
+                photoInput.value = '';
+                photoPreview.style.display = 'none';
+            }
         }
     });
 }
