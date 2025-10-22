@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm start)",
+      "Bash(curl http://localhost:3000)",
+      "Bash(curl http://localhost:3000/api/materials)",
+      "Bash(curl http://localhost:3000/api/options)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

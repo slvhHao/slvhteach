@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>家教工具庫</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">家教工具庫</div>
+            <ul class="nav-links">
+                <li><a href="#home">首頁</a></li>
+                <li><a href="#materials">教材管理</a></li>
+                <li><a href="#options">選項管理</a></li>
+                <li><a href="#about">關於</a></li>
+                <li><a href="#services">服務</a></li>
+                <li><a href="#contact">聯絡</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="home" class="hero">
+            <div class="hero-content">
+                <h1>歡迎來到家教工具庫</h1>
+                <p>管理您的教材，讓教學更有效率</p>
+                <button class="cta-button">開始使用</button>
+            </div>
+        </section>
+
+        <section id="materials" class="section">
+            <div class="container">
+                <h2>教材管理</h2>
+
+                <!-- 新增教材表單 -->
+                <div class="material-form-container">
+                    <h3>新增教具</h3>
+                    <form id="addMaterialForm" class="material-form">
+                        <div class="form-group">
+                            <label for="materialName">教具名稱 *</label>
+                            <input type="text" id="materialName" placeholder="例如：粉紅塔、數字卡片" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="materialPhoto">教具照片</label>
+                            <div class="photo-upload-area">
+                                <input type="file" id="materialPhoto" accept="image/*" style="display: none;">
+                                <button type="button" class="btn-upload" onclick="document.getElementById('materialPhoto').click()">
+                                    <span>📷 選擇照片</span>
+                                </button>
+                                <div id="photoPreview" class="photo-preview" style="display: none;">
+                                    <img id="previewImage" src="" alt="教具照片預覽">
+                                    <button type="button" class="btn-remove-photo" onclick="removePhoto()">✕ 移除照片</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="developmentStage">發展階段 *</label>
+                                <select id="developmentStage" required>
+                                    <option value="">請選擇發展階段</option>
+                                    <option value="嬰幼兒">嬰幼兒（0-3歲）</option>
+                                    <option value="學齡前兒童">學齡前兒童（3-6歲）</option>
+                                    <option value="學齡兒童">學齡兒童（6-12歲）</option>
+                                    <option value="青少年">青少年（12歲以上）</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="teachingType">教學型態 *</label>
+                                <select id="teachingType" required>
+                                    <option value="">請選擇教學型態</option>
+                                    <option value="個人教具">個人教具</option>
+                                    <option value="團體教具">團體教具</option>
+                                    <option value="混合使用">混合使用</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="material">材質 *</label>
+                                <select id="material" required>
+                                    <option value="">請選擇材質</option>
+                                    <option value="紙類">紙類</option>
+                                    <option value="布類">布類</option>
+                                    <option value="木製">木製</option>
+                                    <option value="塑膠">塑膠</option>
+                                    <option value="金屬">金屬</option>
+                                    <option value="混合材質">混合材質</option>
+                                    <option value="其他">其他</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="area">使用領域 *</label>
+                                <select id="area" required>
+                                    <option value="">請選擇使用領域</option>
+                                    <option value="日常生活區">日常生活區</option>
+                                    <option value="感官區">感官區</option>
+                                    <option value="數學區">數學區</option>
+                                    <option value="語文區">語文區</option>
+                                    <option value="文化區">文化區</option>
+                                    <option value="藝術區">藝術區</option>
+                                    <option value="科學區">科學區</option>
+                                    <option value="其他">其他</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="purpose">教學目的/功能</label>
+                            <div class="checkbox-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" value="培養獨立性"> 培養獨立性
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" value="感官辨識"> 感官辨識
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" value="數學邏輯"> 數學邏輯
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" value="語文能力"> 語文能力
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" value="世界觀拓展"> 世界觀拓展
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" value="精細動作"> 精細動作
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" value="大肌肉發展"> 大肌肉發展
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" value="創造力"> 創造力
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" value="社交能力"> 社交能力
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" value="專注力"> 專注力
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="description">備註說明</label>
+                            <textarea id="description" rows="3" placeholder="其他補充說明或使用注意事項"></textarea>
+                        </div>
+
+                        <button type="submit" class="btn-primary">新增教具</button>
+                    </form>
+                </div>
+
+                <!-- 搜尋與篩選 -->
+                <div class="material-search-container">
+                    <h3>搜尋與篩選教具</h3>
+                    <div class="search-box">
+                        <input type="text" id="searchInput" placeholder="搜尋教具名稱...">
+                        <button id="searchBtn" class="btn-secondary">搜尋</button>
+                        <button id="clearSearchBtn" class="btn-secondary">清除篩選</button>
+                    </div>
+                    <div class="filter-row">
+                        <select id="filterStage" class="filter-select">
+                            <option value="">所有發展階段</option>
+                            <option value="嬰幼兒">嬰幼兒</option>
+                            <option value="學齡前兒童">學齡前兒童</option>
+                            <option value="學齡兒童">學齡兒童</option>
+                            <option value="青少年">青少年</option>
+                        </select>
+                        <select id="filterArea" class="filter-select">
+                            <option value="">所有使用領域</option>
+                            <option value="日常生活區">日常生活區</option>
+                            <option value="感官區">感官區</option>
+                            <option value="數學區">數學區</option>
+                            <option value="語文區">語文區</option>
+                            <option value="文化區">文化區</option>
+                            <option value="藝術區">藝術區</option>
+                            <option value="科學區">科學區</option>
+                        </select>
+                        <select id="filterMaterial" class="filter-select">
+                            <option value="">所有材質</option>
+                            <option value="紙類">紙類</option>
+                            <option value="布類">布類</option>
+                            <option value="木製">木製</option>
+                            <option value="塑膠">塑膠</option>
+                            <option value="金屬">金屬</option>
+                            <option value="混合材質">混合材質</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- 教材列表 -->
+                <div class="material-list-container">
+                    <h3>教具列表</h3>
+                    <div id="materialCount" class="material-count">共 0 筆教具</div>
+                    <div id="materialList" class="material-list">
+                        <p class="empty-message">目前沒有教具，請先新增教具</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 教具詳細資訊模態視窗 -->
+        <div id="materialModal" class="modal">
+            <div class="modal-content">
+                <span class="modal-close" onclick="closeMaterialModal()">&times;</span>
+                <div id="modalBody" class="modal-body">
+                    <!-- 動態內容將在此顯示 -->
+                </div>
+            </div>
+        </div>
+
+        <section id="options" class="section">
+            <div class="container">
+                <h2>選項管理</h2>
+                <p class="section-description">管理教具表單中使用的所有選項，您可以新增、編輯或刪除各類別的選項。</p>
+
+                <div class="options-grid">
+                    <!-- 發展階段管理 -->
+                    <div class="option-category">
+                        <h3>發展階段</h3>
+                        <div class="option-add-form">
+                            <input type="text" id="newStage" placeholder="新增發展階段" class="option-input">
+                            <button onclick="addOption('developmentStages', 'newStage')" class="btn-add">+ 新增</button>
+                        </div>
+                        <ul id="stageList" class="option-list">
+                            <!-- 動態生成 -->
+                        </ul>
+                    </div>
+
+                    <!-- 教學型態管理 -->
+                    <div class="option-category">
+                        <h3>教學型態</h3>
+                        <div class="option-add-form">
+                            <input type="text" id="newTeachingType" placeholder="新增教學型態" class="option-input">
+                            <button onclick="addOption('teachingTypes', 'newTeachingType')" class="btn-add">+ 新增</button>
+                        </div>
+                        <ul id="teachingTypeList" class="option-list">
+                            <!-- 動態生成 -->
+                        </ul>
+                    </div>
+
+                    <!-- 材質管理 -->
+                    <div class="option-category">
+                        <h3>材質</h3>
+                        <div class="option-add-form">
+                            <input type="text" id="newMaterial" placeholder="新增材質" class="option-input">
+                            <button onclick="addOption('materials', 'newMaterial')" class="btn-add">+ 新增</button>
+                        </div>
+                        <ul id="materialOptionList" class="option-list">
+                            <!-- 動態生成 -->
+                        </ul>
+                    </div>
+
+                    <!-- 使用領域管理 -->
+                    <div class="option-category">
+                        <h3>使用領域</h3>
+                        <div class="option-add-form">
+                            <input type="text" id="newArea" placeholder="新增使用領域" class="option-input">
+                            <button onclick="addOption('areas', 'newArea')" class="btn-add">+ 新增</button>
+                        </div>
+                        <ul id="areaList" class="option-list">
+                            <!-- 動態生成 -->
+                        </ul>
+                    </div>
+
+                    <!-- 教學目的管理 -->
+                    <div class="option-category">
+                        <h3>教學目的/功能</h3>
+                        <div class="option-add-form">
+                            <input type="text" id="newPurpose" placeholder="新增教學目的" class="option-input">
+                            <button onclick="addOption('purposes', 'newPurpose')" class="btn-add">+ 新增</button>
+                        </div>
+                        <ul id="purposeList" class="option-list">
+                            <!-- 動態生成 -->
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="about" class="section">
+            <div class="container">
+                <h2>關於我們</h2>
+                <p>這裡是關於我們的介紹內容。</p>
+            </div>
+        </section>
+
+        <section id="services" class="section">
+            <div class="container">
+                <h2>我們的服務</h2>
+                <div class="services-grid">
+                    <div class="service-card">
+                        <h3>服務一</h3>
+                        <p>服務內容描述</p>
+                    </div>
+                    <div class="service-card">
+                        <h3>服務二</h3>
+                        <p>服務內容描述</p>
+                    </div>
+                    <div class="service-card">
+                        <h3>服務三</h3>
+                        <p>服務內容描述</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="section">
+            <div class="container">
+                <h2>聯絡我們</h2>
+                <form class="contact-form">
+                    <input type="text" placeholder="姓名" required>
+                    <input type="email" placeholder="電子郵件" required>
+                    <textarea placeholder="訊息" rows="5" required></textarea>
+                    <button type="submit">送出</button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 家教工具庫. 版權所有.</p>
+        </div>
+    </footer>
+
+    <script src="api-config.js"></script>
+    <!-- 使用 MongoDB API 版本 -->
+    <script src="script-api.js"></script>
+    <!-- localStorage 版本備份（如需使用，註解上一行，取消註解下一行） -->
+    <!-- <script src="script-localStorage.js"></script> -->
+</body>
+</html>

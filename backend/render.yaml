@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: jiaojiao-backend
+    env: node
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: MONGODB_URI
+        sync: false
+      - key: PORT
+        value: 3000
+      - key: FRONTEND_URL
+        sync: false
+      - key: NODE_ENV
+        value: production
