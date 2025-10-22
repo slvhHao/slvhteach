@@ -40,7 +40,49 @@
             <div class="container">
                 <h2>教材管理</h2>
 
-                <!-- 新增教材表單 -->
+                <!-- 功能切換標籤 -->
+                <div class="material-tabs">
+                    <button class="material-tab active" data-tab="list">📋 教具列表</button>
+                    <button class="material-tab" data-tab="add">➕ 新增教具</button>
+                </div>
+
+                <!-- 教具列表區塊（預設顯示） -->
+                <div id="listTabContent" class="material-tab-content active">
+                    <!-- 搜尋與篩選 -->
+                    <div class="material-search-container">
+                        <h3>搜尋與篩選教具</h3>
+                        <div class="search-box">
+                            <input type="text" id="searchInput" placeholder="搜尋教具名稱...">
+                            <button id="searchBtn" class="btn-secondary">搜尋</button>
+                            <button id="clearSearchBtn" class="btn-secondary">清除篩選</button>
+                        </div>
+
+                        <div class="filter-group">
+                            <select id="filterStage">
+                                <option value="">所有發展階段</option>
+                            </select>
+                            <select id="filterArea">
+                                <option value="">所有使用領域</option>
+                            </select>
+                            <select id="filterMaterial">
+                                <option value="">所有材質</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- 教材列表 -->
+                    <div class="material-list-container">
+                        <h3>教具列表</h3>
+                        <div id="materialCount" class="material-count">共 0 筆教具</div>
+                        <div id="materialList" class="material-list">
+                            <p class="empty-message">目前沒有教具，請先新增教具</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 新增教具區塊 -->
+                <div id="addTabContent" class="material-tab-content">
+                    <!-- 新增教材表單 -->
                 <div class="material-form-container">
                     <h3>新增教具</h3>
                     <form id="addMaterialForm" class="material-form">
@@ -161,53 +203,8 @@
                         <button type="submit" class="btn-primary">新增教具</button>
                     </form>
                 </div>
-
-                <!-- 搜尋與篩選 -->
-                <div class="material-search-container">
-                    <h3>搜尋與篩選教具</h3>
-                    <div class="search-box">
-                        <input type="text" id="searchInput" placeholder="搜尋教具名稱...">
-                        <button id="searchBtn" class="btn-secondary">搜尋</button>
-                        <button id="clearSearchBtn" class="btn-secondary">清除篩選</button>
-                    </div>
-                    <div class="filter-row">
-                        <select id="filterStage" class="filter-select">
-                            <option value="">所有發展階段</option>
-                            <option value="嬰幼兒">嬰幼兒</option>
-                            <option value="學齡前兒童">學齡前兒童</option>
-                            <option value="學齡兒童">學齡兒童</option>
-                            <option value="青少年">青少年</option>
-                        </select>
-                        <select id="filterArea" class="filter-select">
-                            <option value="">所有使用領域</option>
-                            <option value="日常生活區">日常生活區</option>
-                            <option value="感官區">感官區</option>
-                            <option value="數學區">數學區</option>
-                            <option value="語文區">語文區</option>
-                            <option value="文化區">文化區</option>
-                            <option value="藝術區">藝術區</option>
-                            <option value="科學區">科學區</option>
-                        </select>
-                        <select id="filterMaterial" class="filter-select">
-                            <option value="">所有材質</option>
-                            <option value="紙類">紙類</option>
-                            <option value="布類">布類</option>
-                            <option value="木製">木製</option>
-                            <option value="塑膠">塑膠</option>
-                            <option value="金屬">金屬</option>
-                            <option value="混合材質">混合材質</option>
-                        </select>
-                    </div>
                 </div>
-
-                <!-- 教材列表 -->
-                <div class="material-list-container">
-                    <h3>教具列表</h3>
-                    <div id="materialCount" class="material-count">共 0 筆教具</div>
-                    <div id="materialList" class="material-list">
-                        <p class="empty-message">目前沒有教具，請先新增教具</p>
-                    </div>
-                </div>
+                <!-- 新增教具區塊結束 -->
             </div>
         </section>
 

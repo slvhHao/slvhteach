@@ -279,6 +279,44 @@ footer {
     box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
 }
 
+/* 教材管理標籤 */
+.material-tabs {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+.material-tab {
+    padding: 1rem 2rem;
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #6c757d;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.material-tab:hover {
+    color: #667eea;
+}
+
+.material-tab.active {
+    color: #667eea;
+    border-bottom-color: #667eea;
+}
+
+/* 標籤內容區塊 */
+.material-tab-content {
+    display: none;
+}
+
+.material-tab-content.active {
+    display: block;
+}
+
 /* 教材管理區塊 */
 .material-form-container,
 .material-search-container,
@@ -1119,6 +1157,18 @@ footer {
 
     .services-grid {
         grid-template-columns: 1fr;
+    }
+
+    /* 手機版標籤 */
+    .material-tabs {
+        gap: 0.5rem;
+    }
+
+    .material-tab {
+        padding: 0.8rem 1rem;
+        font-size: 1rem;
+        flex: 1;
+        text-align: center;
     }
 
     .material-form-container,

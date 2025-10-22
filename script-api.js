@@ -412,6 +412,34 @@ async function deleteMaterial(id) {
     }
 }
 
+// ========== 教材管理標籤切換 ==========
+
+function initMaterialTabs() {
+    const tabs = document.querySelectorAll('.material-tab');
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            const targetTab = this.getAttribute('data-tab');
+
+            // 移除所有 active 類別
+            tabs.forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.material-tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+
+            // 加入 active 類別到當前標籤
+            this.classList.add('active');
+
+            // 顯示對應的內容
+            if (targetTab === 'list') {
+                document.getElementById('listTabContent').classList.add('active');
+            } else if (targetTab === 'add') {
+                document.getElementById('addTabContent').classList.add('active');
+            }
+        });
+    });
+}
+
 // ========== 編輯教材功能 ==========
 
 let currentEditPhotoData = null;
@@ -1117,6 +1145,7 @@ document.addEventListener('keypress', function(e) {
 function initMaterialManagement() {
     handlePhotoUpload();
     handleEditPhotoUpload();
+    initMaterialTabs();
 
     const addForm = document.getElementById('addMaterialForm');
     if (addForm) {
