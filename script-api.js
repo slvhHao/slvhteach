@@ -676,14 +676,16 @@ function applyFilters() {
     const filterStage = document.getElementById('filterStage').value;
     const filterArea = document.getElementById('filterArea').value;
     const filterMaterial = document.getElementById('filterMaterial').value;
+    const filterPurpose = document.getElementById('filterPurpose').value;
 
     let filteredMaterials = materials.filter(material => {
         const matchesSearch = !searchTerm || material.name.toLowerCase().includes(searchTerm);
         const matchesStage = !filterStage || material.developmentStage === filterStage;
         const matchesArea = !filterArea || material.area === filterArea;
         const matchesMaterial = !filterMaterial || material.material === filterMaterial;
+        const matchesPurpose = !filterPurpose || (material.purposes && material.purposes.includes(filterPurpose));
 
-        return matchesSearch && matchesStage && matchesArea && matchesMaterial;
+        return matchesSearch && matchesStage && matchesArea && matchesMaterial && matchesPurpose;
     });
 
     renderMaterials(filteredMaterials);
@@ -698,6 +700,7 @@ function clearSearch() {
     document.getElementById('filterStage').value = '';
     document.getElementById('filterArea').value = '';
     document.getElementById('filterMaterial').value = '';
+    document.getElementById('filterPurpose').value = '';
     renderMaterials();
 }
 
@@ -1088,6 +1091,7 @@ function updateFormSelects() {
     updateSelect('filterArea', optionsData.areas, true);
 
     updateCheckboxGroup(optionsData.purposes);
+    updateSelect('filterPurpose', optionsData.purposes, true);
 }
 
 function updateSelect(selectId, options, includeAll = false) {
@@ -1102,6 +1106,7 @@ function updateSelect(selectId, options, includeAll = false) {
         defaultOption.value = '';
         defaultOption.textContent = selectId.includes('Stage') ? '所有發展階段' :
                                    selectId.includes('Area') ? '所有使用領域' :
+                                   selectId.includes('Purpose') ? '所有教學目的' :
                                    '所有材質';
         select.appendChild(defaultOption);
     } else {
@@ -1199,6 +1204,7 @@ function initMaterialManagement() {
     const filterStage = document.getElementById('filterStage');
     const filterArea = document.getElementById('filterArea');
     const filterMaterial = document.getElementById('filterMaterial');
+    const filterPurpose = document.getElementById('filterPurpose');
 
     if (filterStage) {
         filterStage.addEventListener('change', applyFilters);
@@ -1208,6 +1214,9 @@ function initMaterialManagement() {
     }
     if (filterMaterial) {
         filterMaterial.addEventListener('change', applyFilters);
+    }
+    if (filterPurpose) {
+        filterPurpose.addEventListener('change', applyFilters);
     }
 
     // 從 API 載入資料
