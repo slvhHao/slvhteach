@@ -348,12 +348,14 @@ footer {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1.5rem;
+    margin-bottom: 1rem;
 }
 
 .form-group {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
+    margin-bottom: 1.5rem;
 }
 
 .form-group label {
@@ -560,25 +562,84 @@ footer {
     background-color: #c82333;
 }
 
-/* 搜尋框 */
-.search-box {
-    display: flex;
-    gap: 1rem;
-    flex-wrap: wrap;
+/* 按鈕載入狀態 */
+.btn-primary:disabled {
+    background-color: #9ca3af;
+    cursor: not-allowed;
+    transform: none;
 }
 
-.search-box input {
+.btn-primary:disabled:hover {
+    background-color: #9ca3af;
+    transform: none;
+    box-shadow: none;
+}
+
+.btn-loading {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* 搜尋框 */
+.search-input-wrapper {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.search-input-wrapper input {
     flex: 1;
-    min-width: 250px;
     padding: 0.8rem;
     border: 2px solid #e0e0e0;
     border-radius: 5px;
     font-size: 1rem;
 }
 
-.search-box input:focus {
+.search-input-wrapper input:focus {
     outline: none;
     border-color: #667eea;
+}
+
+.btn-search {
+    background-color: #667eea;
+    color: white;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 5px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    white-space: nowrap;
+}
+
+.btn-search:hover {
+    background-color: #5568d3;
+    transform: translateY(-2px);
+}
+
+/* 篩選動作按鈕區 */
+.filter-actions {
+    margin-top: 1rem;
+    text-align: center;
+}
+
+.filter-actions button {
+    min-width: 200px;
 }
 
 /* 教材列表 */
@@ -1189,12 +1250,19 @@ footer {
         grid-template-columns: 1fr;
     }
 
-    .search-box {
+    /* 手機版搜尋框 */
+    .search-input-wrapper {
         flex-direction: column;
     }
 
-    .search-box input {
-        min-width: 100%;
+    .btn-search {
+        width: 100%;
+        padding: 1rem;
+    }
+
+    .filter-actions button {
+        width: 100%;
+        min-width: auto;
     }
 
     .material-item {

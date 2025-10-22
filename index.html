@@ -51,22 +51,40 @@
                     <!-- 搜尋與篩選 -->
                     <div class="material-search-container">
                         <h3>搜尋與篩選教具</h3>
-                        <div class="search-box">
-                            <input type="text" id="searchInput" placeholder="搜尋教具名稱...">
-                            <button id="searchBtn" class="btn-secondary">搜尋</button>
-                            <button id="clearSearchBtn" class="btn-secondary">清除篩選</button>
+
+                        <div class="form-group">
+                            <label for="searchInput">搜尋教具名稱</label>
+                            <div class="search-input-wrapper">
+                                <input type="text" id="searchInput" placeholder="輸入教具名稱...">
+                                <button id="searchBtn" class="btn-search">🔍 搜尋</button>
+                            </div>
                         </div>
 
-                        <div class="filter-group">
-                            <select id="filterStage">
-                                <option value="">所有發展階段</option>
-                            </select>
-                            <select id="filterArea">
-                                <option value="">所有使用領域</option>
-                            </select>
-                            <select id="filterMaterial">
-                                <option value="">所有材質</option>
-                            </select>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="filterStage">發展階段</label>
+                                <select id="filterStage">
+                                    <option value="">所有發展階段</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="filterArea">使用領域</label>
+                                <select id="filterArea">
+                                    <option value="">所有使用領域</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="filterMaterial">材質</label>
+                                <select id="filterMaterial">
+                                    <option value="">所有材質</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="filter-actions">
+                            <button id="clearSearchBtn" class="btn-secondary">清除所有篩選</button>
                         </div>
                     </div>
 
@@ -200,7 +218,13 @@
                             <textarea id="description" rows="3" placeholder="其他補充說明或使用注意事項"></textarea>
                         </div>
 
-                        <button type="submit" class="btn-primary">新增教具</button>
+                        <button type="submit" class="btn-primary" id="addMaterialBtn">
+                            <span class="btn-text">新增教具</span>
+                            <span class="btn-loading" style="display: none;">
+                                <span class="spinner"></span>
+                                <span>新增中...</span>
+                            </span>
+                        </button>
                     </form>
                 </div>
                 </div>

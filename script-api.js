@@ -358,6 +358,16 @@ function escapeHtml(text) {
 async function addMaterial(e) {
     e.preventDefault();
 
+    // 取得按鈕和載入元素
+    const submitBtn = document.getElementById('addMaterialBtn');
+    const btnText = submitBtn.querySelector('.btn-text');
+    const btnLoading = submitBtn.querySelector('.btn-loading');
+
+    // 防止重複提交
+    if (submitBtn.disabled) {
+        return;
+    }
+
     const name = document.getElementById('materialName').value.trim();
     const developmentStage = document.getElementById('developmentStage').value;
     const teachingType = document.getElementById('teachingType').value;
@@ -385,6 +395,11 @@ async function addMaterial(e) {
     };
 
     try {
+        // 顯示載入狀態
+        submitBtn.disabled = true;
+        btnText.style.display = 'none';
+        btnLoading.style.display = 'flex';
+
         await API.post(API_CONFIG.ENDPOINTS.MATERIALS, newMaterial);
         await loadMaterials();
         e.target.reset();
@@ -393,6 +408,11 @@ async function addMaterial(e) {
     } catch (error) {
         console.error('新增教具失敗:', error);
         showNotification('新增教具失敗', 'error');
+    } finally {
+        // 恢復按鈕狀態
+        submitBtn.disabled = false;
+        btnText.style.display = 'inline';
+        btnLoading.style.display = 'none';
     }
 }
 
