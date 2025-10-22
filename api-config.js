@@ -4,11 +4,10 @@ const API_CONFIG = {
     BASE_URL: (() => {
         // 如果在 localhost 環境，使用本地 API
         if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-            return 'https://slvhteach.onrender.com/api';
+            return 'http://localhost:3000/api';
         }
-        // 線上環境：請在部署後替換為您的 Render.com 網址
-        // 格式：https://your-app-name.onrender.com/api
-        return 'YOUR_RENDER_API_URL_HERE';
+        // 線上環境：使用 Render.com API
+        return 'https://slvhteach.onrender.com/api';
     })(),
 
     // API 端點
