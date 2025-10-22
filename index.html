@@ -221,6 +221,87 @@
             </div>
         </div>
 
+        <!-- 編輯教具模態視窗 -->
+        <div id="editMaterialModal" class="modal">
+            <div class="modal-content">
+                <span class="modal-close" onclick="closeEditModal()">&times;</span>
+                <div class="modal-body">
+                    <h3>編輯教具</h3>
+                    <form id="editMaterialForm" class="material-form">
+                        <input type="hidden" id="editMaterialId">
+
+                        <div class="form-group">
+                            <label for="editMaterialName">教具名稱 *</label>
+                            <input type="text" id="editMaterialName" placeholder="例如：粉紅塔、數字卡片" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="editMaterialPhoto">教具照片</label>
+                            <div class="photo-upload-area">
+                                <input type="file" id="editMaterialPhoto" accept="image/*" style="display: none;">
+                                <button type="button" class="btn-upload" onclick="document.getElementById('editMaterialPhoto').click()">
+                                    <span>📷 更換照片</span>
+                                </button>
+                                <div id="editPhotoPreview" class="photo-preview" style="display: none;">
+                                    <img id="editPreviewImage" src="" alt="教具照片預覽">
+                                    <button type="button" class="btn-remove-photo" onclick="removeEditPhoto()">✕ 移除照片</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="editDevelopmentStage">發展階段 *</label>
+                                <select id="editDevelopmentStage" required>
+                                    <option value="">請選擇發展階段</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="editTeachingType">教學型態 *</label>
+                                <select id="editTeachingType" required>
+                                    <option value="">請選擇教學型態</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="editMaterial">材質 *</label>
+                                <select id="editMaterial" required>
+                                    <option value="">請選擇材質</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="editArea">使用領域 *</label>
+                                <select id="editArea" required>
+                                    <option value="">請選擇使用領域</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>教學目的</label>
+                            <div id="editPurposeCheckboxes" class="checkbox-group">
+                                <!-- 動態生成 -->
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="editDescription">教具說明</label>
+                            <textarea id="editDescription" placeholder="請描述教具的使用方式、教學目標等" rows="4"></textarea>
+                        </div>
+
+                        <div class="modal-actions">
+                            <button type="submit" class="btn-primary">儲存變更</button>
+                            <button type="button" class="btn-secondary" onclick="closeEditModal()">取消</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
         <section id="options" class="section">
             <div class="container">
                 <h2>選項管理</h2>

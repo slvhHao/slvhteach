@@ -335,6 +335,7 @@ function renderMaterials(materialsToRender = materials) {
                 ${material.description ? `<p class="material-description">${escapeHtml(material.description)}</p>` : ''}
             </div>
             <div class="material-actions">
+                <button class="btn-edit" onclick="editMaterial('${material._id}')">編輯</button>
                 <button class="btn-danger" onclick="deleteMaterial('${material._id}')">刪除</button>
             </div>
         `;
@@ -408,6 +409,216 @@ async function deleteMaterial(id) {
     } catch (error) {
         console.error('刪除教具失敗:', error);
         showNotification('刪除教具失敗', 'error');
+    }
+}
+
+// ========== 編輯教材功能 ==========
+
+let currentEditPhotoData = null;
+let editingMaterialId = null;
+
+// 開啟編輯視窗
+function editMaterial(id) {
+    const material = materials.find(m => m._id === id);
+    if (!material) return;
+
+    editingMaterialId = id;
+
+    // 填充表單
+    document.getElementById('editMaterialId').value = id;
+    document.getElementById('editMaterialName').value = material.name;
+    document.getElementById('editDescription').value = material.description || '';
+
+    // 填充下拉選單
+    populateEditSelects();
+
+    // 設定選中的值
+    document.getElementById('editDevelopmentStage').value = material.developmentStage;
+    document.getElementById('editTeachingType').value = material.teachingType;
+    document.getElementById('editMaterial').value = material.material;
+    document.getElementById('editArea').value = material.area;
+
+    // 填充教學目的核取方塊
+    populateEditPurposes(material.purposes);
+
+    // 處理照片
+    currentEditPhotoData = material.photo || null;
+    if (material.photo) {
+        document.getElementById('editPreviewImage').src = material.photo;
+        document.getElementById('editPhotoPreview').style.display = 'block';
+    } else {
+        document.getElementById('editPhotoPreview').style.display = 'none';
+    }
+
+    // 開啟模態視窗
+    const modal = document.getElementById('editMaterialModal');
+    modal.classList.add('show');
+    document.body.style.overflow = 'hidden';
+}
+
+// 填充編輯表單的下拉選單
+function populateEditSelects() {
+    const stageSelect = document.getElementById('editDevelopmentStage');
+    const typeSelect = document.getElementById('editTeachingType');
+    const materialSelect = document.getElementById('editMaterial');
+    const areaSelect = document.getElementById('editArea');
+
+    // 清空現有選項（保留第一個預設選項）
+    stageSelect.innerHTML = '<option value="">請選擇發展階段</option>';
+    typeSelect.innerHTML = '<option value="">請選擇教學型態</option>';
+    materialSelect.innerHTML = '<option value="">請選擇材質</option>';
+    areaSelect.innerHTML = '<option value="">請選擇使用領域</option>';
+
+    // 填充選項
+    if (optionsData.developmentStages) {
+        optionsData.developmentStages.forEach(stage => {
+            stageSelect.innerHTML += `<option value="${stage}">${stage}</option>`;
+        });
+    }
+
+    if (optionsData.teachingTypes) {
+        optionsData.teachingTypes.forEach(type => {
+            typeSelect.innerHTML += `<option value="${type}">${type}</option>`;
+        });
+    }
+
+    if (optionsData.materials) {
+        optionsData.materials.forEach(material => {
+            materialSelect.innerHTML += `<option value="${material}">${material}</option>`;
+        });
+    }
+
+    if (optionsData.areas) {
+        optionsData.areas.forEach(area => {
+            areaSelect.innerHTML += `<option value="${area}">${area}</option>`;
+        });
+    }
+}
+
+// 填充教學目的核取方塊
+function populateEditPurposes(selectedPurposes = []) {
+    const container = document.getElementById('editPurposeCheckboxes');
+    container.innerHTML = '';
+
+    if (optionsData.purposes) {
+        optionsData.purposes.forEach(purpose => {
+            const checked = selectedPurposes.includes(purpose) ? 'checked' : '';
+            container.innerHTML += `
+                <label class="checkbox-label">
+                    <input type="checkbox" value="${purpose}" ${checked}>
+                    ${purpose}
+                </label>
+            `;
+        });
+    }
+}
+
+// 處理編輯表單的照片上傳
+function handleEditPhotoUpload() {
+    const photoInput = document.getElementById('editMaterialPhoto');
+    const photoPreview = document.getElementById('editPhotoPreview');
+    const previewImage = document.getElementById('editPreviewImage');
+
+    photoInput.addEventListener('change', async function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            if (file.size > 10 * 1024 * 1024) {
+                alert('照片檔案過大，請選擇小於 10MB 的照片');
+                photoInput.value = '';
+                return;
+            }
+            if (!file.type.startsWith('image/')) {
+                alert('請選擇圖片檔案');
+                photoInput.value = '';
+                return;
+            }
+
+            try {
+                previewImage.src = '';
+                photoPreview.style.display = 'block';
+                previewImage.alt = '正在壓縮圖片...';
+
+                currentEditPhotoData = await compressImage(file, 800, 0.7);
+
+                previewImage.src = currentEditPhotoData;
+                previewImage.alt = '照片預覽';
+
+                const sizeKB = (currentEditPhotoData.length / 1024).toFixed(0);
+                console.log(`壓縮後圖片大小: ${sizeKB}KB`);
+
+            } catch (error) {
+                console.error('圖片壓縮失敗:', error);
+                alert('圖片處理失敗，請重試');
+                photoInput.value = '';
+                photoPreview.style.display = 'none';
+            }
+        }
+    });
+}
+
+// 移除編輯表單的照片
+function removeEditPhoto() {
+    const photoInput = document.getElementById('editMaterialPhoto');
+    const photoPreview = document.getElementById('editPhotoPreview');
+    const previewImage = document.getElementById('editPreviewImage');
+
+    photoInput.value = '';
+    previewImage.src = '';
+    photoPreview.style.display = 'none';
+    currentEditPhotoData = null;
+}
+
+// 關閉編輯視窗
+function closeEditModal() {
+    const modal = document.getElementById('editMaterialModal');
+    modal.classList.remove('show');
+    document.body.style.overflow = 'auto';
+
+    // 清空表單
+    document.getElementById('editMaterialForm').reset();
+    removeEditPhoto();
+    editingMaterialId = null;
+}
+
+// 提交編輯表單
+async function submitEditMaterial(e) {
+    e.preventDefault();
+
+    const id = document.getElementById('editMaterialId').value;
+    const name = document.getElementById('editMaterialName').value.trim();
+    const developmentStage = document.getElementById('editDevelopmentStage').value;
+    const teachingType = document.getElementById('editTeachingType').value;
+    const material = document.getElementById('editMaterial').value;
+    const area = document.getElementById('editArea').value;
+    const description = document.getElementById('editDescription').value.trim();
+
+    const purposeCheckboxes = document.querySelectorAll('#editPurposeCheckboxes input[type="checkbox"]:checked');
+    const purposes = Array.from(purposeCheckboxes).map(cb => cb.value);
+
+    if (!name || !developmentStage || !teachingType || !material || !area) {
+        alert('請填寫所有必填欄位（標記 * 的欄位）！');
+        return;
+    }
+
+    const updatedMaterial = {
+        name,
+        developmentStage,
+        teachingType,
+        material,
+        area,
+        purposes,
+        description,
+        photo: currentEditPhotoData
+    };
+
+    try {
+        await API.put(`${API_CONFIG.ENDPOINTS.MATERIALS}/${id}`, updatedMaterial);
+        await loadMaterials();
+        closeEditModal();
+        showNotification('教具更新成功！', 'success');
+    } catch (error) {
+        console.error('更新教具失敗:', error);
+        showNotification('更新教具失敗', 'error');
     }
 }
 
@@ -905,10 +1116,16 @@ document.addEventListener('keypress', function(e) {
 // 初始化教材管理功能
 function initMaterialManagement() {
     handlePhotoUpload();
+    handleEditPhotoUpload();
 
     const addForm = document.getElementById('addMaterialForm');
     if (addForm) {
         addForm.addEventListener('submit', addMaterial);
+    }
+
+    const editForm = document.getElementById('editMaterialForm');
+    if (editForm) {
+        editForm.addEventListener('submit', submitEditMaterial);
     }
 
     const searchBtn = document.getElementById('searchBtn');
