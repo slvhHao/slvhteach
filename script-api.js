@@ -40,8 +40,34 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         const targetId = this.getAttribute('href');
         showSection(targetId);
         history.pushState(null, null, targetId);
+
+        // 手機版：關閉選單
+        closeMobileMenu();
     });
 });
+
+// 手機版選單功能
+function initMobileMenu() {
+    const menuToggle = document.querySelector('.mobile-menu-toggle');
+    const navLinks = document.querySelector('.nav-links');
+
+    if (menuToggle) {
+        menuToggle.addEventListener('click', function() {
+            this.classList.toggle('active');
+            navLinks.classList.toggle('active');
+        });
+    }
+}
+
+function closeMobileMenu() {
+    const menuToggle = document.querySelector('.mobile-menu-toggle');
+    const navLinks = document.querySelector('.nav-links');
+
+    if (menuToggle && navLinks) {
+        menuToggle.classList.remove('active');
+        navLinks.classList.remove('active');
+    }
+}
 
 window.addEventListener('load', function() {
     const hash = window.location.hash || '#home';
@@ -972,6 +998,7 @@ function initContactForm() {
 // 頁面載入完成後初始化
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', async function() {
+        initMobileMenu();
         await loadOptions();
         initMaterialManagement();
         initOptionsManagement();
@@ -979,6 +1006,7 @@ if (document.readyState === 'loading') {
     });
 } else {
     (async function() {
+        initMobileMenu();
         await loadOptions();
         initMaterialManagement();
         initOptionsManagement();
