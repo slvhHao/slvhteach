@@ -288,25 +288,45 @@
         <section id="about" class="section">
             <div class="container">
                 <h2>關於我們</h2>
-                <p>這裡是關於我們的介紹內容。</p>
+                <div class="about-content">
+                    <p>在教育研究與教學實踐的場域中，學者常需管理大量教材與教具，但傳統方式不僅耗時，還容易造成資源重複與遺漏。我們因此打造了一個專為教育學者設計的「教具管理網站」，以數位化、智慧化的方式協助教育單位更有效地整理與運用教學資源。</p>
+
+                    <p>目前系統核心功能聚焦於「教材分類管理」，讓使用者能依據教學領域、課程主題或用途快速歸納教材。直覺的分類方式與清晰的檢索介面，讓教育者能迅速掌握所有教材資訊，輕鬆建立屬於自己的教具資料庫。每項教材都能附加詳細描述、教學應用與圖片，協助教師在備課與研究時即時取得所需資料。</p>
+
+                    <p>我們深知教育工作的需求不斷演變，因此系統架構已預留擴充空間，未來將陸續加入庫存追蹤、借用預約、維護紀錄與資料分析等智慧模組。這些功能將進一步串聯教學現場與管理流程，讓學者資源運用更透明、更高效，並以數據化方式支持教育決策。</p>
+
+                    <p>無論是個人研究室、小型教學單位，或大型院校，我們的教具管理平台都能成為教育者的數位助手。從現在開始，讓知識的整理更有系統，讓教育的智慧從管理開始。</p>
+                </div>
             </div>
         </section>
 
         <section id="services" class="section">
             <div class="container">
-                <h2>我們的服務</h2>
+                <h2>核心功能</h2>
                 <div class="services-grid">
                     <div class="service-card">
-                        <h3>服務一</h3>
-                        <p>服務內容描述</p>
+                        <h3>📚 教材分類管理</h3>
+                        <p>依據發展階段、教學領域、材質類型進行多維度分類，讓教材整理井然有序，快速檢索一目了然。</p>
                     </div>
                     <div class="service-card">
-                        <h3>服務二</h3>
-                        <p>服務內容描述</p>
+                        <h3>🔍 智能檢索系統</h3>
+                        <p>支援關鍵字搜尋與多條件篩選，無論是教具名稱、使用領域或教學目的，都能即時找到所需資源。</p>
                     </div>
                     <div class="service-card">
-                        <h3>服務三</h3>
-                        <p>服務內容描述</p>
+                        <h3>📸 圖文並茂展示</h3>
+                        <p>每項教材可附加照片與詳細說明，視覺化呈現教具特色，方便教師備課與資源分享。</p>
+                    </div>
+                    <div class="service-card">
+                        <h3>☁️ 雲端資料儲存</h3>
+                        <p>採用 MongoDB Atlas 雲端資料庫，資料安全可靠，隨時隨地都能存取您的教具資料庫。</p>
+                    </div>
+                    <div class="service-card">
+                        <h3>⚙️ 彈性選項設定</h3>
+                        <p>可自訂發展階段、教學型態、材質類別等分類選項，系統隨著您的需求靈活調整。</p>
+                    </div>
+                    <div class="service-card">
+                        <h3>🚀 持續功能擴展</h3>
+                        <p>未來將新增庫存追蹤、借用預約、維護紀錄與數據分析等進階功能，打造完整教具管理生態系。</p>
                     </div>
                 </div>
             </div>
@@ -315,12 +335,13 @@
         <section id="contact" class="section">
             <div class="container">
                 <h2>聯絡我們</h2>
-                <form class="contact-form">
-                    <input type="text" placeholder="姓名" required>
-                    <input type="email" placeholder="電子郵件" required>
-                    <textarea placeholder="訊息" rows="5" required></textarea>
+                <form class="contact-form" id="contactForm">
+                    <input type="text" id="contactName" placeholder="姓名" required>
+                    <input type="email" id="contactEmail" placeholder="您的電子郵件" required>
+                    <textarea id="contactMessage" placeholder="訊息內容" rows="5" required></textarea>
                     <button type="submit">送出</button>
                 </form>
+                <div id="contactStatus" style="text-align: center; margin-top: 1rem; display: none;"></div>
             </div>
         </section>
     </main>

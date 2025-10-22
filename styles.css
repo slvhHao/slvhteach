@@ -170,6 +170,31 @@ main > section {
 .service-card h3 {
     color: #667eea;
     margin-bottom: 1rem;
+    font-size: 1.3rem;
+}
+
+.service-card p {
+    line-height: 1.6;
+    color: #555;
+}
+
+/* 關於我們內容 */
+.about-content {
+    max-width: 900px;
+    margin: 2rem auto;
+}
+
+.about-content p {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    margin-bottom: 1.5rem;
+    color: #444;
+    text-align: justify;
+    text-indent: 2em;
+}
+
+.about-content p:last-child {
+    margin-bottom: 0;
 }
 
 /* 聯絡表單 */

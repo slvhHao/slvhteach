@@ -913,17 +913,66 @@ function initMaterialManagement() {
     loadMaterials();
 }
 
+// ========== 聯絡表單功能 ==========
+
+function initContactForm() {
+    const contactForm = document.getElementById('contactForm');
+    const contactStatus = document.getElementById('contactStatus');
+
+    if (contactForm) {
+        contactForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const name = document.getElementById('contactName').value.trim();
+            const email = document.getElementById('contactEmail').value.trim();
+            const message = document.getElementById('contactMessage').value.trim();
+
+            // 建立 mailto 連結
+            const recipient = 'sulleyhao@gmail.com';
+            const subject = encodeURIComponent(`家教工具庫聯絡訊息 - 來自 ${name}`);
+            const body = encodeURIComponent(
+                `姓名：${name}\n` +
+                `電子郵件：${email}\n\n` +
+                `訊息內容：\n${message}\n\n` +
+                `---\n` +
+                `此訊息來自家教工具庫聯絡表單`
+            );
+
+            const mailtoLink = `mailto:${recipient}?subject=${subject}&body=${body}`;
+
+            // 開啟郵件客戶端
+            window.location.href = mailtoLink;
+
+            // 顯示提示訊息
+            contactStatus.textContent = '正在開啟您的郵件程式...';
+            contactStatus.style.display = 'block';
+            contactStatus.style.color = '#667eea';
+
+            // 3 秒後清除表單
+            setTimeout(() => {
+                contactForm.reset();
+                contactStatus.textContent = '感謝您的來信！您的郵件程式應該已開啟。';
+                setTimeout(() => {
+                    contactStatus.style.display = 'none';
+                }, 3000);
+            }, 1000);
+        });
+    }
+}
+
 // 頁面載入完成後初始化
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', async function() {
         await loadOptions();
         initMaterialManagement();
         initOptionsManagement();
+        initContactForm();
     });
 } else {
     (async function() {
         await loadOptions();
         initMaterialManagement();
         initOptionsManagement();
+        initContactForm();
     })();
 }
