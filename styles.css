@@ -994,6 +994,13 @@ footer {
     padding: 2rem;
 }
 
+.modal-body h2,
+.modal-body h3 {
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    color: #2c3e50;
+}
+
 .modal-photo-container {
     width: 100%;
     text-align: center;

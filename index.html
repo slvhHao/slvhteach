@@ -457,8 +457,9 @@
         <div id="editCaseModal" class="modal">
             <div class="modal-content">
                 <span class="modal-close" onclick="closeEditCaseModal()">&times;</span>
-                <h2>編輯個案</h2>
-                <form id="editCaseForm" class="material-form">
+                <div class="modal-body">
+                    <h2>編輯個案</h2>
+                    <form id="editCaseForm" class="material-form">
                     <input type="hidden" id="editCaseId">
 
                     <div class="form-group">
@@ -522,7 +523,8 @@
                         <button type="button" class="btn-secondary" onclick="closeEditCaseModal()">取消</button>
                         <button type="submit" class="btn-primary">儲存變更</button>
                     </div>
-                </form>
+                    </form>
+                </div>
             </div>
         </div>
 
