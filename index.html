@@ -358,6 +358,21 @@
 
                 <!-- 個案列表區塊（預設顯示） -->
                 <div id="caseListTabContent" class="material-tab-content active">
+                    <!-- 搜尋與篩選 -->
+                    <div class="material-search-container">
+                        <h3>搜尋個案</h3>
+                        <div class="form-group">
+                            <label for="caseSearchInput">搜尋姓名或暱稱</label>
+                            <div class="search-input-wrapper">
+                                <input type="text" id="caseSearchInput" placeholder="輸入個案姓名或暱稱...">
+                                <button id="caseSearchBtn" class="btn-search">🔍 搜尋</button>
+                            </div>
+                        </div>
+                        <div class="filter-actions">
+                            <button id="clearCaseSearchBtn" class="btn-secondary">清除篩選</button>
+                        </div>
+                    </div>
+
                     <!-- 個案列表 -->
                     <div class="material-list-container">
                         <h3>個案列表</h3>

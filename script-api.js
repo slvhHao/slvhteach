@@ -1363,6 +1363,94 @@ function renderCases() {
     });
 }
 
+// 套用個案篩選
+function applyCaseFilters() {
+    const searchTerm = document.getElementById('caseSearchInput').value.trim().toLowerCase();
+
+    let filteredCases = cases.filter(caseItem => {
+        const matchesName = !searchTerm || caseItem.name.toLowerCase().includes(searchTerm);
+        const matchesNickname = !searchTerm || caseItem.nickname.toLowerCase().includes(searchTerm);
+
+        return matchesName || matchesNickname;
+    });
+
+    renderFilteredCases(filteredCases);
+}
+
+// 渲染篩選後的個案列表
+function renderFilteredCases(casesToRender) {
+    const caseList = document.getElementById('caseList');
+    const caseCount = document.getElementById('caseCount');
+
+    if (!caseList || !caseCount) return;
+
+    caseCount.textContent = `共 ${casesToRender.length} 筆個案`;
+    caseList.innerHTML = '';
+
+    if (casesToRender.length === 0) {
+        caseList.innerHTML = '<p class="empty-message">沒有符合條件的個案</p>';
+        return;
+    }
+
+    casesToRender.forEach(caseItem => {
+        const caseItemDiv = document.createElement('div');
+        caseItemDiv.className = 'case-item';
+
+        let photoHtml = '';
+        if (caseItem.photo) {
+            photoHtml = `<img src="${caseItem.photo}" alt="${escapeHtml(caseItem.name)}" class="case-photo">`;
+        }
+
+        let purposesHtml = '';
+        if (caseItem.purposes && caseItem.purposes.length > 0) {
+            purposesHtml = `
+                <div class="case-purposes">
+                    <div class="case-purposes-label">教學目的：</div>
+                    <div class="purpose-tags">
+                        ${caseItem.purposes.map(purpose => `<span class="purpose-tag">${escapeHtml(purpose)}</span>`).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        caseItemDiv.innerHTML = `
+            ${photoHtml}
+            <div class="case-info" style="cursor: pointer;" onclick="viewCaseDetail('${caseItem._id}')">
+                <h4>${escapeHtml(caseItem.name)} <span class="case-nickname">(${escapeHtml(caseItem.nickname)})</span></h4>
+                <div class="case-details">
+                    <div class="case-detail-item">
+                        <span class="case-detail-label">發展階段：</span>
+                        <span class="material-badge badge-stage">${escapeHtml(caseItem.developmentStage)}</span>
+                    </div>
+                    <div class="case-detail-item">
+                        <span class="case-detail-label">地址：</span>
+                        <span>${escapeHtml(caseItem.address)}</span>
+                    </div>
+                    <div class="case-detail-item">
+                        <span class="case-detail-label">聯絡人：</span>
+                        <span>${escapeHtml(caseItem.contactName)} - ${escapeHtml(caseItem.contactPhone)}</span>
+                    </div>
+                </div>
+                ${purposesHtml}
+            </div>
+            <div class="case-actions">
+                <button class="btn-edit" onclick="event.stopPropagation(); editCase('${caseItem._id}')">編輯</button>
+                <button class="btn-danger" onclick="event.stopPropagation(); deleteCase('${caseItem._id}')">刪除</button>
+            </div>
+        `;
+        caseList.appendChild(caseItemDiv);
+    });
+}
+
+function searchCases() {
+    applyCaseFilters();
+}
+
+function clearCaseSearch() {
+    document.getElementById('caseSearchInput').value = '';
+    renderCases();
+}
+
 // 新增個案照片處理
 function handleCasePhotoUpload() {
     const photoInput = document.getElementById('casePhoto');
@@ -1775,6 +1863,27 @@ function initCaseManagement() {
 
     // 初始化標籤切換
     initCaseTabs();
+
+    // 個案搜尋功能
+    const caseSearchBtn = document.getElementById('caseSearchBtn');
+    const caseSearchInput = document.getElementById('caseSearchInput');
+    const clearCaseSearchBtn = document.getElementById('clearCaseSearchBtn');
+
+    if (caseSearchBtn) {
+        caseSearchBtn.addEventListener('click', searchCases);
+    }
+
+    if (caseSearchInput) {
+        caseSearchInput.addEventListener('keyup', function(e) {
+            if (e.key === 'Enter') {
+                searchCases();
+            }
+        });
+    }
+
+    if (clearCaseSearchBtn) {
+        clearCaseSearchBtn.addEventListener('click', clearCaseSearch);
+    }
 
     // 載入個案資料
     loadCases();
