@@ -1281,11 +1281,20 @@ function initContactForm() {
 // 載入所有個案
 async function loadCases() {
     try {
+        console.log('開始載入個案，API端點:', API_CONFIG.ENDPOINTS.CASES);
+        console.log('完整URL:', API_CONFIG.BASE_URL + API_CONFIG.ENDPOINTS.CASES);
         cases = await API.get(API_CONFIG.ENDPOINTS.CASES);
+        console.log('個案載入成功，數量:', cases.length);
         renderCases();
     } catch (error) {
-        console.error('載入個案失敗:', error);
-        showNotification('載入個案失敗，請檢查網路連線', 'error');
+        console.error('載入個案失敗 - 錯誤詳情:', error);
+        console.error('錯誤訊息:', error.message);
+        console.error('錯誤堆疊:', error.stack);
+        // 只有在個案列表DOM存在時才顯示錯誤訊息
+        const caseList = document.getElementById('caseList');
+        if (caseList) {
+            showNotification('載入個案失敗，請檢查網路連線', 'error');
+        }
     }
 }
 
