@@ -48,6 +48,21 @@ const optionsSchema = new mongoose.Schema({
 
 const Options = mongoose.model('Options', optionsSchema);
 
+// 個案 Schema
+const caseSchema = new mongoose.Schema({
+    name: { type: String, required: true }, // 姓名
+    nickname: { type: String, required: true }, // 暱稱
+    address: { type: String, required: true }, // 地址
+    contactName: { type: String, required: true }, // 聯絡人姓名
+    contactPhone: { type: String, required: true }, // 聯絡人電話
+    developmentStage: { type: String, required: true }, // 發展階段
+    purposes: [String], // 教學目的/功能（陣列）
+    photo: String, // Base64 編碼的照片
+    createdAt: { type: Date, default: Date.now }
+}, { timestamps: true });
+
+const Case = mongoose.model('Case', caseSchema);
+
 // ==================== API 路由 ====================
 
 // 首頁
@@ -58,6 +73,7 @@ app.get('/', (req, res) => {
         endpoints: {
             materials: '/api/materials',
             options: '/api/options',
+            cases: '/api/cases',
             health: '/api/health'
         }
     });
@@ -173,6 +189,63 @@ app.put('/api/options', async (req, res) => {
         res.json(options);
     } catch (error) {
         res.status(400).json({ error: '更新選項失敗', message: error.message });
+    }
+});
+
+// ========== 個案管理 API ==========
+
+// 取得所有個案
+app.get('/api/cases', async (_req, res) => {
+    try {
+        const cases = await Case.find().sort({ createdAt: -1 });
+        res.json(cases);
+    } catch (error) {
+        res.status(500).json({ error: '取得個案失敗', message: error.message });
+    }
+});
+
+// 新增個案
+app.post('/api/cases', async (req, res) => {
+    try {
+        const newCase = new Case(req.body);
+        const savedCase = await newCase.save();
+        res.status(201).json(savedCase);
+    } catch (error) {
+        res.status(400).json({ error: '新增個案失敗', message: error.message });
+    }
+});
+
+// 更新個案
+app.put('/api/cases/:id', async (req, res) => {
+    try {
+        const updatedCase = await Case.findByIdAndUpdate(
+            req.params.id,
+            req.body,
+            { new: true, runValidators: true }
+        );
+
+        if (!updatedCase) {
+            return res.status(404).json({ error: '找不到此個案' });
+        }
+
+        res.json(updatedCase);
+    } catch (error) {
+        res.status(400).json({ error: '更新個案失敗', message: error.message });
+    }
+});
+
+// 刪除個案
+app.delete('/api/cases/:id', async (req, res) => {
+    try {
+        const deletedCase = await Case.findByIdAndDelete(req.params.id);
+
+        if (!deletedCase) {
+            return res.status(404).json({ error: '找不到此個案' });
+        }
+
+        res.json({ message: '個案已刪除', case: deletedCase });
+    } catch (error) {
+        res.status(500).json({ error: '刪除個案失敗', message: error.message });
     }
 });
 

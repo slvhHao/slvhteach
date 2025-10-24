@@ -14,6 +14,7 @@ const API_CONFIG = {
     ENDPOINTS: {
         MATERIALS: '/materials',
         OPTIONS: '/options',
+        CASES: '/cases',
         HEALTH: '/health'
     }
 };

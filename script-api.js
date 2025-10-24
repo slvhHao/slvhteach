@@ -143,6 +143,12 @@ let materials = [];
 let optionsData = {};
 let currentPhotoData = null;
 
+// ========== 個案管理功能 ==========
+
+let cases = [];
+let currentCasePhotoData = null;
+let currentEditCasePhotoData = null;
+
 // 圖片壓縮功能
 function compressImage(file, maxWidth = 800, quality = 0.7) {
     return new Promise((resolve, reject) => {
@@ -1270,6 +1276,493 @@ function initContactForm() {
     }
 }
 
+// ========== 個案管理功能實作 ==========
+
+// 載入所有個案
+async function loadCases() {
+    try {
+        cases = await API.get(API_CONFIG.ENDPOINTS.CASES);
+        renderCases();
+    } catch (error) {
+        console.error('載入個案失敗:', error);
+        showNotification('載入個案失敗，請檢查網路連線', 'error');
+    }
+}
+
+// 渲染個案列表
+function renderCases() {
+    const caseList = document.getElementById('caseList');
+    const caseCount = document.getElementById('caseCount');
+
+    if (!caseList || !caseCount) return;
+
+    caseCount.textContent = `共 ${cases.length} 筆個案`;
+    caseList.innerHTML = '';
+
+    if (cases.length === 0) {
+        caseList.innerHTML = '<p class="empty-message">目前沒有個案，請先新增個案</p>';
+        return;
+    }
+
+    cases.forEach(caseItem => {
+        const caseItemDiv = document.createElement('div');
+        caseItemDiv.className = 'case-item';
+
+        let photoHtml = '';
+        if (caseItem.photo) {
+            photoHtml = `<img src="${caseItem.photo}" alt="${escapeHtml(caseItem.name)}" class="case-photo">`;
+        }
+
+        let purposesHtml = '';
+        if (caseItem.purposes && caseItem.purposes.length > 0) {
+            purposesHtml = `
+                <div class="case-purposes">
+                    <div class="case-purposes-label">教學目的：</div>
+                    <div class="purpose-tags">
+                        ${caseItem.purposes.map(purpose => `<span class="purpose-tag">${escapeHtml(purpose)}</span>`).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        caseItemDiv.innerHTML = `
+            ${photoHtml}
+            <div class="case-info" style="cursor: pointer;" onclick="viewCaseDetail('${caseItem._id}')">
+                <h4>${escapeHtml(caseItem.name)} <span class="case-nickname">(${escapeHtml(caseItem.nickname)})</span></h4>
+                <div class="case-details">
+                    <div class="case-detail-item">
+                        <span class="case-detail-label">發展階段：</span>
+                        <span class="material-badge badge-stage">${escapeHtml(caseItem.developmentStage)}</span>
+                    </div>
+                    <div class="case-detail-item">
+                        <span class="case-detail-label">地址：</span>
+                        <span>${escapeHtml(caseItem.address)}</span>
+                    </div>
+                    <div class="case-detail-item">
+                        <span class="case-detail-label">聯絡人：</span>
+                        <span>${escapeHtml(caseItem.contactName)} - ${escapeHtml(caseItem.contactPhone)}</span>
+                    </div>
+                </div>
+                ${purposesHtml}
+            </div>
+            <div class="case-actions">
+                <button class="btn-edit" onclick="event.stopPropagation(); editCase('${caseItem._id}')">編輯</button>
+                <button class="btn-danger" onclick="event.stopPropagation(); deleteCase('${caseItem._id}')">刪除</button>
+            </div>
+        `;
+        caseList.appendChild(caseItemDiv);
+    });
+}
+
+// 新增個案照片處理
+function handleCasePhotoUpload() {
+    const photoInput = document.getElementById('casePhoto');
+    const photoPreview = document.getElementById('casePhotoPreview');
+    const previewImage = document.getElementById('casePreviewImage');
+
+    photoInput.addEventListener('change', async function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            if (file.size > 10 * 1024 * 1024) {
+                alert('照片檔案過大，請選擇小於 10MB 的照片');
+                photoInput.value = '';
+                return;
+            }
+            if (!file.type.startsWith('image/')) {
+                alert('請選擇圖片檔案');
+                photoInput.value = '';
+                return;
+            }
+
+            try {
+                previewImage.src = '';
+                photoPreview.style.display = 'block';
+                previewImage.alt = '正在壓縮圖片...';
+
+                currentCasePhotoData = await compressImage(file, 800, 0.7);
+
+                previewImage.src = currentCasePhotoData;
+                previewImage.alt = '照片預覽';
+            } catch (error) {
+                console.error('圖片壓縮失敗:', error);
+                alert('圖片處理失敗，請重試');
+                photoInput.value = '';
+                photoPreview.style.display = 'none';
+            }
+        }
+    });
+}
+
+function removeCasePhoto() {
+    const photoInput = document.getElementById('casePhoto');
+    const photoPreview = document.getElementById('casePhotoPreview');
+    const previewImage = document.getElementById('casePreviewImage');
+
+    photoInput.value = '';
+    previewImage.src = '';
+    photoPreview.style.display = 'none';
+    currentCasePhotoData = null;
+}
+
+// 新增個案
+async function addCase(e) {
+    e.preventDefault();
+
+    const submitBtn = document.getElementById('addCaseBtn');
+    const btnText = submitBtn.querySelector('.btn-text');
+    const btnLoading = submitBtn.querySelector('.btn-loading');
+
+    if (submitBtn.disabled) {
+        return;
+    }
+
+    const name = document.getElementById('caseName').value.trim();
+    const nickname = document.getElementById('caseNickname').value.trim();
+    const address = document.getElementById('caseAddress').value.trim();
+    const contactName = document.getElementById('caseContactName').value.trim();
+    const contactPhone = document.getElementById('caseContactPhone').value.trim();
+    const developmentStage = document.getElementById('caseDevelopmentStage').value;
+
+    const purposeCheckboxes = document.querySelectorAll('#casePurposesCheckbox input[type="checkbox"]:checked');
+    const purposes = Array.from(purposeCheckboxes).map(cb => cb.value);
+
+    if (!name || !nickname || !address || !contactName || !contactPhone || !developmentStage) {
+        alert('請填寫所有必填欄位（標記 * 的欄位）！');
+        return;
+    }
+
+    if (purposes.length === 0) {
+        alert('請至少選擇一個教學目的/功能！');
+        return;
+    }
+
+    const newCase = {
+        name,
+        nickname,
+        address,
+        contactName,
+        contactPhone,
+        developmentStage,
+        purposes,
+        photo: currentCasePhotoData
+    };
+
+    try {
+        submitBtn.disabled = true;
+        btnText.style.display = 'none';
+        btnLoading.style.display = 'flex';
+
+        await API.post(API_CONFIG.ENDPOINTS.CASES, newCase);
+        await loadCases();
+        e.target.reset();
+        removeCasePhoto();
+        showNotification('個案新增成功！', 'success');
+    } catch (error) {
+        console.error('新增個案失敗:', error);
+        showNotification('新增個案失敗', 'error');
+    } finally {
+        submitBtn.disabled = false;
+        btnText.style.display = 'inline';
+        btnLoading.style.display = 'none';
+    }
+}
+
+// 刪除個案
+async function deleteCase(id) {
+    if (!confirm('確定要刪除這個個案嗎？')) {
+        return;
+    }
+
+    try {
+        await API.delete(`${API_CONFIG.ENDPOINTS.CASES}/${id}`);
+        await loadCases();
+        showNotification('個案已刪除', 'info');
+    } catch (error) {
+        console.error('刪除個案失敗:', error);
+        showNotification('刪除個案失敗', 'error');
+    }
+}
+
+// 檢視個案詳細資訊
+function viewCaseDetail(id) {
+    const caseItem = cases.find(c => c._id === id);
+    if (!caseItem) return;
+
+    const modal = document.getElementById('caseModal');
+    const modalBody = document.getElementById('caseModalBody');
+
+    let photoHtml = '';
+    if (caseItem.photo) {
+        photoHtml = `<img src="${caseItem.photo}" alt="${escapeHtml(caseItem.name)}" style="max-width: 200px; border-radius: 50%; margin-bottom: 1rem; border: 4px solid #28a745;">`;
+    }
+
+    let purposesHtml = '';
+    if (caseItem.purposes && caseItem.purposes.length > 0) {
+        purposesHtml = `
+            <p><strong>教學目的/功能：</strong></p>
+            <div class="purpose-tags">
+                ${caseItem.purposes.map(purpose => `<span class="purpose-tag">${escapeHtml(purpose)}</span>`).join('')}
+            </div>
+        `;
+    }
+
+    modalBody.innerHTML = `
+        <div style="text-align: center;">
+            ${photoHtml}
+        </div>
+        <h3>${escapeHtml(caseItem.name)} (${escapeHtml(caseItem.nickname)})</h3>
+        <div style="margin-top: 1.5rem;">
+            <p><strong>發展階段：</strong> <span class="material-badge badge-stage">${escapeHtml(caseItem.developmentStage)}</span></p>
+            <p><strong>地址：</strong> ${escapeHtml(caseItem.address)}</p>
+            <p><strong>聯絡人姓名：</strong> ${escapeHtml(caseItem.contactName)}</p>
+            <p><strong>聯絡人電話：</strong> ${escapeHtml(caseItem.contactPhone)}</p>
+            ${purposesHtml}
+            <p style="margin-top: 1rem; color: #6c757d; font-size: 0.9rem;">
+                建立時間：${new Date(caseItem.createdAt).toLocaleString('zh-TW')}
+            </p>
+        </div>
+    `;
+
+    modal.style.display = 'block';
+}
+
+function closeCaseModal() {
+    document.getElementById('caseModal').style.display = 'none';
+}
+
+// 編輯個案照片處理
+function handleEditCasePhotoUpload() {
+    const photoInput = document.getElementById('editCasePhoto');
+    const photoPreview = document.getElementById('editCasePhotoPreview');
+    const previewImage = document.getElementById('editCasePreviewImage');
+
+    photoInput.addEventListener('change', async function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            if (file.size > 10 * 1024 * 1024) {
+                alert('照片檔案過大，請選擇小於 10MB 的照片');
+                photoInput.value = '';
+                return;
+            }
+            if (!file.type.startsWith('image/')) {
+                alert('請選擇圖片檔案');
+                photoInput.value = '';
+                return;
+            }
+
+            try {
+                previewImage.src = '';
+                photoPreview.style.display = 'block';
+                previewImage.alt = '正在壓縮圖片...';
+
+                currentEditCasePhotoData = await compressImage(file, 800, 0.7);
+
+                previewImage.src = currentEditCasePhotoData;
+                previewImage.alt = '照片預覽';
+            } catch (error) {
+                console.error('圖片壓縮失敗:', error);
+                alert('圖片處理失敗，請重試');
+                photoInput.value = '';
+                photoPreview.style.display = 'none';
+            }
+        }
+    });
+}
+
+function removeEditCasePhoto() {
+    const photoInput = document.getElementById('editCasePhoto');
+    const photoPreview = document.getElementById('editCasePhotoPreview');
+    const previewImage = document.getElementById('editCasePreviewImage');
+
+    photoInput.value = '';
+    previewImage.src = '';
+    photoPreview.style.display = 'none';
+    currentEditCasePhotoData = null;
+}
+
+// 編輯個案
+function editCase(id) {
+    const caseItem = cases.find(c => c._id === id);
+    if (!caseItem) return;
+
+    const modal = document.getElementById('editCaseModal');
+
+    document.getElementById('editCaseId').value = caseItem._id;
+    document.getElementById('editCaseName').value = caseItem.name;
+    document.getElementById('editCaseNickname').value = caseItem.nickname;
+    document.getElementById('editCaseAddress').value = caseItem.address;
+    document.getElementById('editCaseContactName').value = caseItem.contactName;
+    document.getElementById('editCaseContactPhone').value = caseItem.contactPhone;
+    document.getElementById('editCaseDevelopmentStage').value = caseItem.developmentStage;
+
+    // 填充教學目的複選框
+    populateEditCasePurposes(caseItem.purposes || []);
+
+    // 顯示現有照片
+    if (caseItem.photo) {
+        const photoPreview = document.getElementById('editCasePhotoPreview');
+        const previewImage = document.getElementById('editCasePreviewImage');
+        previewImage.src = caseItem.photo;
+        photoPreview.style.display = 'block';
+        currentEditCasePhotoData = caseItem.photo;
+    } else {
+        removeEditCasePhoto();
+    }
+
+    modal.style.display = 'block';
+}
+
+function populateEditCasePurposes(selectedPurposes) {
+    const container = document.getElementById('editCasePurposesCheckbox');
+    container.innerHTML = '';
+
+    optionsData.purposes.forEach(purpose => {
+        const label = document.createElement('label');
+        label.className = 'checkbox-label';
+
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.value = purpose;
+        checkbox.checked = selectedPurposes.includes(purpose);
+
+        label.appendChild(checkbox);
+        label.appendChild(document.createTextNode(' ' + purpose));
+        container.appendChild(label);
+    });
+}
+
+function closeEditCaseModal() {
+    document.getElementById('editCaseModal').style.display = 'none';
+    removeEditCasePhoto();
+}
+
+// 提交編輯個案
+async function submitEditCase(e) {
+    e.preventDefault();
+
+    const id = document.getElementById('editCaseId').value;
+    const name = document.getElementById('editCaseName').value.trim();
+    const nickname = document.getElementById('editCaseNickname').value.trim();
+    const address = document.getElementById('editCaseAddress').value.trim();
+    const contactName = document.getElementById('editCaseContactName').value.trim();
+    const contactPhone = document.getElementById('editCaseContactPhone').value.trim();
+    const developmentStage = document.getElementById('editCaseDevelopmentStage').value;
+
+    const purposeCheckboxes = document.querySelectorAll('#editCasePurposesCheckbox input[type="checkbox"]:checked');
+    const purposes = Array.from(purposeCheckboxes).map(cb => cb.value);
+
+    if (!name || !nickname || !address || !contactName || !contactPhone || !developmentStage) {
+        alert('請填寫所有必填欄位（標記 * 的欄位）！');
+        return;
+    }
+
+    if (purposes.length === 0) {
+        alert('請至少選擇一個教學目的/功能！');
+        return;
+    }
+
+    const updatedCase = {
+        name,
+        nickname,
+        address,
+        contactName,
+        contactPhone,
+        developmentStage,
+        purposes,
+        photo: currentEditCasePhotoData
+    };
+
+    try {
+        await API.put(`${API_CONFIG.ENDPOINTS.CASES}/${id}`, updatedCase);
+        await loadCases();
+        closeEditCaseModal();
+        showNotification('個案更新成功！', 'success');
+    } catch (error) {
+        console.error('更新個案失敗:', error);
+        showNotification('更新個案失敗', 'error');
+    }
+}
+
+// 個案管理標籤切換
+function initCaseTabs() {
+    const tabs = document.querySelectorAll('.material-tabs button[data-tab]');
+    tabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            const targetTab = this.getAttribute('data-tab');
+            const parentSection = this.closest('section');
+
+            if (!parentSection || parentSection.id !== 'cases') return;
+
+            // 移除所有活動狀態
+            tabs.forEach(t => {
+                if (t.closest('section')?.id === 'cases') {
+                    t.classList.remove('active');
+                }
+            });
+            parentSection.querySelectorAll('.material-tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+
+            // 添加活動狀態
+            this.classList.add('active');
+            if (targetTab === 'list') {
+                document.getElementById('caseListTabContent').classList.add('active');
+            } else if (targetTab === 'add') {
+                document.getElementById('caseAddTabContent').classList.add('active');
+            }
+        });
+    });
+}
+
+// 初始化個案管理
+function initCaseManagement() {
+    const addCaseForm = document.getElementById('addCaseForm');
+    const editCaseForm = document.getElementById('editCaseForm');
+
+    if (addCaseForm) {
+        addCaseForm.addEventListener('submit', addCase);
+        handleCasePhotoUpload();
+    }
+
+    if (editCaseForm) {
+        editCaseForm.addEventListener('submit', submitEditCase);
+        handleEditCasePhotoUpload();
+    }
+
+    // 填充發展階段下拉選單
+    updateSelect('caseDevelopmentStage', optionsData.developmentStages);
+    updateSelect('editCaseDevelopmentStage', optionsData.developmentStages);
+
+    // 填充教學目的複選框
+    updateCaseCheckboxGroup('casePurposesCheckbox', optionsData.purposes);
+
+    // 初始化標籤切換
+    initCaseTabs();
+
+    // 載入個案資料
+    loadCases();
+}
+
+function updateCaseCheckboxGroup(containerId, purposes) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    container.innerHTML = '';
+
+    purposes.forEach(purpose => {
+        const label = document.createElement('label');
+        label.className = 'checkbox-label';
+
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.value = purpose;
+
+        label.appendChild(checkbox);
+        label.appendChild(document.createTextNode(' ' + purpose));
+        container.appendChild(label);
+    });
+}
+
 // ========== 資料庫連接檢查 ==========
 
 async function checkDatabaseConnection() {
@@ -1332,6 +1825,7 @@ if (document.readyState === 'loading') {
         if (dbConnected) {
             await loadOptions();
             initMaterialManagement();
+            initCaseManagement();
             initOptionsManagement();
             initContactForm();
         }
@@ -1346,6 +1840,7 @@ if (document.readyState === 'loading') {
         if (dbConnected) {
             await loadOptions();
             initMaterialManagement();
+            initCaseManagement();
             initOptionsManagement();
             initContactForm();
         }

@@ -32,6 +32,7 @@
             <ul class="nav-links">
                 <li><a href="#home">首頁</a></li>
                 <li><a href="#materials">教材管理</a></li>
+                <li><a href="#cases">個案管理</a></li>
                 <li><a href="#options">選項管理</a></li>
                 <li><a href="#about">關於</a></li>
                 <li><a href="#services">服務</a></li>
@@ -340,6 +341,188 @@
                         </div>
                     </form>
                 </div>
+            </div>
+        </div>
+
+        <!-- 個案管理 -->
+        <section id="cases" class="section">
+            <div class="container">
+                <h2>個案管理</h2>
+                <p class="section-description">管理您的教學個案資料，包含個案基本資料、聯絡人資訊及教學目標。</p>
+
+                <!-- 個案管理標籤 -->
+                <div class="material-tabs">
+                    <button class="material-tab active" data-tab="list">📋 個案列表</button>
+                    <button class="material-tab" data-tab="add">➕ 新增個案</button>
+                </div>
+
+                <!-- 個案列表區塊（預設顯示） -->
+                <div id="caseListTabContent" class="material-tab-content active">
+                    <!-- 個案列表 -->
+                    <div class="material-list-container">
+                        <h3>個案列表</h3>
+                        <div id="caseCount" class="material-count">共 0 筆個案</div>
+                        <div id="caseList" class="case-list">
+                            <p class="empty-message">目前沒有個案，請先新增個案</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 新增個案區塊 -->
+                <div id="caseAddTabContent" class="material-tab-content">
+                    <div class="material-form-container">
+                        <h3>新增個案</h3>
+                        <form id="addCaseForm" class="material-form">
+                            <div class="form-group">
+                                <label for="casePhoto">個案照片</label>
+                                <div class="photo-upload-area">
+                                    <input type="file" id="casePhoto" accept="image/*" style="display: none;">
+                                    <button type="button" class="btn-upload" onclick="document.getElementById('casePhoto').click()">
+                                        <span>📷 選擇照片</span>
+                                    </button>
+                                    <div id="casePhotoPreview" class="photo-preview" style="display: none;">
+                                        <img id="casePreviewImage" src="" alt="個案照片預覽">
+                                        <button type="button" class="btn-remove-photo" onclick="removeCasePhoto()" title="移除照片">✕</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="caseName">姓名 *</label>
+                                    <input type="text" id="caseName" placeholder="個案姓名" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="caseNickname">暱稱 *</label>
+                                    <input type="text" id="caseNickname" placeholder="個案暱稱" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="caseAddress">地址 *</label>
+                                <input type="text" id="caseAddress" placeholder="個案地址" required>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="caseContactName">聯絡人姓名 *</label>
+                                    <input type="text" id="caseContactName" placeholder="聯絡人姓名" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="caseContactPhone">聯絡人電話 *</label>
+                                    <input type="tel" id="caseContactPhone" placeholder="例如：0912-345-678" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="caseDevelopmentStage">發展階段 *</label>
+                                <select id="caseDevelopmentStage" required>
+                                    <option value="">請選擇發展階段</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="casePurposes">教學目的/功能 *</label>
+                                <div id="casePurposesCheckbox" class="checkbox-group">
+                                    <!-- 動態生成 -->
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn-primary" id="addCaseBtn">
+                                <span class="btn-text">新增個案</span>
+                                <span class="btn-loading" style="display: none;">
+                                    <span class="spinner"></span>
+                                    <span>新增中...</span>
+                                </span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 個案詳細資訊模態視窗 -->
+        <div id="caseModal" class="modal">
+            <div class="modal-content">
+                <span class="modal-close" onclick="closeCaseModal()">&times;</span>
+                <div id="caseModalBody" class="modal-body">
+                    <!-- 動態內容將在此顯示 -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 編輯個案模態視窗 -->
+        <div id="editCaseModal" class="modal">
+            <div class="modal-content">
+                <span class="modal-close" onclick="closeEditCaseModal()">&times;</span>
+                <h2>編輯個案</h2>
+                <form id="editCaseForm" class="material-form">
+                    <input type="hidden" id="editCaseId">
+
+                    <div class="form-group">
+                        <label for="editCasePhoto">個案照片</label>
+                        <div class="photo-upload-area">
+                            <input type="file" id="editCasePhoto" accept="image/*" style="display: none;">
+                            <button type="button" class="btn-upload" onclick="document.getElementById('editCasePhoto').click()">
+                                <span>📷 更換照片</span>
+                            </button>
+                            <div id="editCasePhotoPreview" class="photo-preview" style="display: none;">
+                                <img id="editCasePreviewImage" src="" alt="個案照片預覽">
+                                <button type="button" class="btn-remove-photo" onclick="removeEditCasePhoto()" title="移除照片">✕</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="editCaseName">姓名 *</label>
+                            <input type="text" id="editCaseName" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="editCaseNickname">暱稱 *</label>
+                            <input type="text" id="editCaseNickname" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editCaseAddress">地址 *</label>
+                        <input type="text" id="editCaseAddress" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="editCaseContactName">聯絡人姓名 *</label>
+                            <input type="text" id="editCaseContactName" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="editCaseContactPhone">聯絡人電話 *</label>
+                            <input type="tel" id="editCaseContactPhone" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editCaseDevelopmentStage">發展階段 *</label>
+                        <select id="editCaseDevelopmentStage" required>
+                            <option value="">請選擇發展階段</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editCasePurposes">教學目的/功能 *</label>
+                        <div id="editCasePurposesCheckbox" class="checkbox-group">
+                            <!-- 動態生成 -->
+                        </div>
+                    </div>
+
+                    <div class="modal-actions">
+                        <button type="button" class="btn-secondary" onclick="closeEditCaseModal()">取消</button>
+                        <button type="submit" class="btn-primary">儲存變更</button>
+                    </div>
+                </form>
             </div>
         </div>
 
