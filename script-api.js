@@ -1532,11 +1532,14 @@ function viewCaseDetail(id) {
         </div>
     `;
 
-    modal.style.display = 'block';
+    modal.style.display = 'flex';
+    modal.classList.add('show');
 }
 
 function closeCaseModal() {
-    document.getElementById('caseModal').style.display = 'none';
+    const modal = document.getElementById('caseModal');
+    modal.style.display = 'none';
+    modal.classList.remove('show');
 }
 
 // 編輯個案照片處理
@@ -1618,7 +1621,8 @@ function editCase(id) {
         removeEditCasePhoto();
     }
 
-    modal.style.display = 'block';
+    modal.style.display = 'flex';
+    modal.classList.add('show');
 }
 
 function populateEditCasePurposes(selectedPurposes) {
@@ -1641,7 +1645,9 @@ function populateEditCasePurposes(selectedPurposes) {
 }
 
 function closeEditCaseModal() {
-    document.getElementById('editCaseModal').style.display = 'none';
+    const modal = document.getElementById('editCaseModal');
+    modal.style.display = 'none';
+    modal.classList.remove('show');
     removeEditCasePhoto();
 }
 
