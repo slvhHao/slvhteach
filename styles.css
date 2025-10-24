@@ -879,12 +879,11 @@ footer {
 }
 
 .case-photo {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
+    width: 120px;
+    height: 120px;
+    border-radius: 8px;
     object-fit: cover;
     box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    border: 3px solid #28a745;
 }
 
 .case-info {

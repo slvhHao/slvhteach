@@ -1502,7 +1502,7 @@ function viewCaseDetail(id) {
 
     let photoHtml = '';
     if (caseItem.photo) {
-        photoHtml = `<img src="${caseItem.photo}" alt="${escapeHtml(caseItem.name)}" style="max-width: 200px; border-radius: 50%; margin-bottom: 1rem; border: 4px solid #28a745;">`;
+        photoHtml = `<img src="${caseItem.photo}" alt="${escapeHtml(caseItem.name)}" style="max-width: 300px; max-height: 300px; border-radius: 8px; margin-bottom: 1rem; box-shadow: 0 4px 8px rgba(0,0,0,0.1); object-fit: cover;">`;
     }
 
     let purposesHtml = '';
