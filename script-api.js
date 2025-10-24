@@ -1502,31 +1502,53 @@ function viewCaseDetail(id) {
 
     let photoHtml = '';
     if (caseItem.photo) {
-        photoHtml = `<img src="${caseItem.photo}" alt="${escapeHtml(caseItem.name)}" style="max-width: 300px; max-height: 300px; border-radius: 8px; margin-bottom: 1rem; box-shadow: 0 4px 8px rgba(0,0,0,0.1); object-fit: cover;">`;
+        photoHtml = `
+            <div class="modal-photo-container">
+                <img src="${caseItem.photo}" alt="${escapeHtml(caseItem.name)}" class="modal-photo" onclick="openImageLightbox('${caseItem.photo}')">
+                <p style="text-align: center; color: #6c757d; font-size: 0.9rem; margin-top: 0.5rem;">點擊圖片可放大檢視</p>
+            </div>
+        `;
     }
 
     let purposesHtml = '';
     if (caseItem.purposes && caseItem.purposes.length > 0) {
         purposesHtml = `
-            <p><strong>教學目的/功能：</strong></p>
-            <div class="purpose-tags">
-                ${caseItem.purposes.map(purpose => `<span class="purpose-tag">${escapeHtml(purpose)}</span>`).join('')}
+            <div class="modal-purposes-section">
+                <div class="modal-purposes-title">教學目的/功能</div>
+                <div class="modal-purpose-tags">
+                    ${caseItem.purposes.map(purpose => `<span class="modal-purpose-tag">${escapeHtml(purpose)}</span>`).join('')}
+                </div>
             </div>
         `;
     }
 
     modalBody.innerHTML = `
-        <div style="text-align: center;">
-            ${photoHtml}
+        ${photoHtml}
+        <h2 class="modal-title">${escapeHtml(caseItem.name)} <span class="case-nickname">(${escapeHtml(caseItem.nickname)})</span></h2>
+
+        <div class="modal-info-grid">
+            <div class="modal-info-item">
+                <div class="modal-info-label">發展階段</div>
+                <div class="modal-info-value">${escapeHtml(caseItem.developmentStage)}</div>
+            </div>
+            <div class="modal-info-item">
+                <div class="modal-info-label">地址</div>
+                <div class="modal-info-value">${escapeHtml(caseItem.address)}</div>
+            </div>
+            <div class="modal-info-item">
+                <div class="modal-info-label">聯絡人姓名</div>
+                <div class="modal-info-value">${escapeHtml(caseItem.contactName)}</div>
+            </div>
+            <div class="modal-info-item">
+                <div class="modal-info-label">聯絡人電話</div>
+                <div class="modal-info-value">${escapeHtml(caseItem.contactPhone)}</div>
+            </div>
         </div>
-        <h3>${escapeHtml(caseItem.name)} (${escapeHtml(caseItem.nickname)})</h3>
-        <div style="margin-top: 1.5rem;">
-            <p><strong>發展階段：</strong> <span class="material-badge badge-stage">${escapeHtml(caseItem.developmentStage)}</span></p>
-            <p><strong>地址：</strong> ${escapeHtml(caseItem.address)}</p>
-            <p><strong>聯絡人姓名：</strong> ${escapeHtml(caseItem.contactName)}</p>
-            <p><strong>聯絡人電話：</strong> ${escapeHtml(caseItem.contactPhone)}</p>
-            ${purposesHtml}
-            <p style="margin-top: 1rem; color: #6c757d; font-size: 0.9rem;">
+
+        ${purposesHtml}
+
+        <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid #e0e0e0;">
+            <p style="color: #6c757d; font-size: 0.9rem; margin: 0;">
                 建立時間：${new Date(caseItem.createdAt).toLocaleString('zh-TW')}
             </p>
         </div>
